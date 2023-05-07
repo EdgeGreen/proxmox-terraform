@@ -2,6 +2,7 @@
 **/.terraform/*
 .ssh
 /ansible
+/templates/*.sh
 
 # .tfstate files
 *.tfstate
