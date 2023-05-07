@@ -18,18 +18,16 @@ resource "null_resource" "ansible_repo" {
   }
 
   depends_on = [
-    data.template_file.ansible_playbook,
     local_file.ansible_repo_script
   ]
 }
 
 resource "local_file" "ansible_inventory" {
   content  = data.template_file.ansible_inventory.rendered
-  filename = "${path.module}/ansible/inventory/mycluster/inventory.ini"
+  filename = "${path.module}/ansible/inventory/my-cluster/hosts.ini"
 
   depends_on = [
     null_resource.ansible_repo,
-    data.template_file.ansible_inventory
   ]
 }
 
@@ -38,8 +36,16 @@ resource "local_file" "ansible_configuration" {
   filename = "${path.module}/ansible/ansible.cfg"
 
   depends_on = [
-    null_resource.ansible_repo,
-    data.template_file.ansible_configuration
+    local_file.ansible_inventory
+  ]
+}
+
+resource "local_file" "ansible_vars" {
+  content  = data.template_file.ansible_vars.rendered
+  filename = "${path.module}/ansible/inventory/my-cluster/group_vars/all.yml"
+
+  depends_on = [
+    local_file.ansible_configuration,
   ]
 }
 
@@ -49,14 +55,29 @@ resource "null_resource" "ansible_play" {
   }
 
   provisioner "local-exec" {
-    command = "ansible-playbook -i ${path.module}/ansible/inventory/mycluster/inventory.ini  --become --become-user=root ${path.module}/ansible/cluster.yml"
+    command = "cd ${path.module}/ansible && ansible-playbook site.yml -i inventory/my-cluster/hosts.ini"
   }
 
   depends_on = [
     null_resource.ansible_repo,
     local_file.ansible_configuration,
     local_file.ansible_inventory,
-    local_file.ansible_repo_script
+    local_file.ansible_repo_script,
+    local_file.ansible_vars
+  ]
+}
+
+resource "null_resource" "kube_config" {
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    command = "scp -i ${path.module}/.ssh/key ubuntu@${proxmox_vm_qemu.kube_master_node[0].default_ipv4_address}:~/.kube/config ~/config"
+  }
+
+  depends_on = [
+    null_resource.ansible_play
   ]
 }
 

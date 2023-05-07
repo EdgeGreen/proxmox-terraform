@@ -30,7 +30,7 @@ resource "proxmox_vm_qemu" "kube_master_node" {
   agent            = 1
 
   disk {
-    storage = "Hard"
+    storage = "local-lvm"
     type    = "virtio"
     size    = "32G"
   }
