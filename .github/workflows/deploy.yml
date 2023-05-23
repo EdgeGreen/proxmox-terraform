@@ -27,9 +27,9 @@ jobs:
       #     allowed_ips: "${{ secrets. MY_WG_ALLOWED_IPS}}"
       #     private_key: "${{ secrets.MY_WG_ENDPOINT_PRIVATE_KEY }}"
       #     preshared_key: "${{ secrets.MY_WG_PRESHARED_KEY }}"
-      - name: dig-Install
-        id: dig-install
-        run: apt install dnsutils
+      # - name: dig-Install
+      #   id: dig-install
+      #   run: apt install dnsutils
 
       - name: dig
         id: dig
