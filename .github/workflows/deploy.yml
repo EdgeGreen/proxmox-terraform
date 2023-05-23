@@ -18,16 +18,19 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Set up WireGuard
-        uses: egor-tensin/setup-wireguard@v1
-        with:
-          endpoint: "${{ secrets.MY_WG_ENDPOINT}}"
-          endpoint_public_key: "${{ secrets.MY_WG_ENDPOINT_PUBLIC_KEY }}"
-          ips: "${{ secrets. MY_WG_IPS }}"
-          allowed_ips: "${{ secrets. MY_WG_ALLOWED_IPS}}"
-          private_key: "${{ secrets.MY_WG_ENDPOINT_PRIVATE_KEY }}"
-          preshared_key: "${{ secrets.MY_WG_PRESHARED_KEY }}"
+      # - name: Set up WireGuard
+      #   uses: egor-tensin/setup-wireguard@v1
+      #   with:
+      #     endpoint: "${{ secrets.MY_WG_ENDPOINT}}"
+      #     endpoint_public_key: "${{ secrets.MY_WG_ENDPOINT_PUBLIC_KEY }}"
+      #     ips: "${{ secrets. MY_WG_IPS }}"
+      #     allowed_ips: "${{ secrets. MY_WG_ALLOWED_IPS}}"
+      #     private_key: "${{ secrets.MY_WG_ENDPOINT_PRIVATE_KEY }}"
+      #     preshared_key: "${{ secrets.MY_WG_PRESHARED_KEY }}"
+      - name: Ping-Install
+        id: ping-install
+        run: apt install dnsutils
 
       - name: Ping
         id: ping
-        run: ping -c 10 10.11.98.1
+        run: dig vpn.edge.net.ua +short
