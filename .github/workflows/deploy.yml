@@ -1,0 +1,32 @@
+name: "Backend Folder"
+
+on:
+  push:
+    branches: "**"
+    paths:
+      - "**"
+
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        # Backend working directory.
+        working-directory: "**"
+    permissions:
+      pull-requests: write
+
+      - name: Set up WireGuard
+        uses: egor-tensin/setup-wireguard@v1
+        with:
+          endpoint: '${{ secrets.MY_WG_ENDPOINT}}'
+          endpoint_public_key: '${{ secrets.MY_WG_ENDPOINT_PUBLIC_KEY }}'
+          ips: '${{ secrets. MY_WG_IPS }}'
+          allowed_ips: '${{ secrets. MY_WG_ALLOWED_IPS}}'
+          private_key: '${{ secrets.MY_WG_ENDPOINT_PRIVATE_KEY }}'
+          preshared_key: '${{ secrets.MY_WG_PRESHARED_KEY }}'
+
+      - name: Ping
+        id: ping
+        run: ping -c 10 10.11.98.1
